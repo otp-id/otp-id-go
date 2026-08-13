@@ -80,7 +80,7 @@ if err != nil {
 		}
 		return
 	}
-	// network error, canceled context, or malformed response
+	// network error, canceled context, or SDK-side validation (empty API key / empty otp_id)
 }
 ```
 
@@ -97,7 +97,7 @@ locked, or already-used transactions do return an `*APIError`
 | `ChannelSMS` | `sms` | `RequestOTP` + `SendOTP` |
 | `ChannelVoice` | `voice` | `RequestOTP` only |
 | `ChannelEmail` | `email` | `RequestOTP` + `SendOTP` |
-| `ChannelMisscall` | `misscall` | `RequestOTP` only; user completes the caller's number |
+| `ChannelMisscall` | `misscall` | use `RequestOTP` for misscall; user completes the caller's number |
 | `ChannelWhatsAppInbound` | `whatsapp_inbound` | `RequestOTP` only; user messages OTP.ID |
 
 ### Bring your own code
@@ -147,7 +147,7 @@ outside ±5 minutes (replay protection), and decodes the payload:
 
 ```go
 http.HandleFunc("/webhooks/otpid", func(w http.ResponseWriter, r *http.Request) {
-	body, err := io.ReadAll(r.Body)
+	body, err := io.ReadAll(http.MaxBytesReader(w, r.Body, 1<<20))
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		return

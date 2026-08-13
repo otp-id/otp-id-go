@@ -13,8 +13,10 @@ type OrderParams struct {
 	// Required for every channel except ChannelWhatsAppInbound.
 	Destination string `json:"destination,omitempty"`
 	// Brand overrides the merchant brand_name shown in the OTP message.
+	// Required by the server for ChannelVoice.
 	Brand string `json:"brand,omitempty"`
 	// OtpLength is the generated code length. Server default 6, clamped 4-8.
+	// The server forces 4 for ChannelVoice.
 	OtpLength int `json:"otp_length,omitempty"`
 	// TTL is the OTP validity in seconds. Server default 300, clamped 60-900.
 	TTL int `json:"ttl,omitempty"`
@@ -69,8 +71,9 @@ type sendOTPBody struct {
 	Otp string `json:"otp"`
 }
 
-// SendOTP delivers a client-generated code (POST /v3/send). Only the
-// whatsapp, sms, and email channels are accepted by the server.
+// SendOTP delivers a client-generated code (POST /v3/send). The server
+// rejects ChannelVoice and ChannelWhatsAppInbound for this endpoint; use
+// ChannelWhatsApp, ChannelSMS, or ChannelEmail.
 func (c *Client) SendOTP(ctx context.Context, otp string, p OrderParams) (*OrderResult, error) {
 	var out OrderResult
 	if err := c.doRequest(ctx, http.MethodPost, "/v3/send", sendOTPBody{OrderParams: p, Otp: otp}, &out); err != nil {
