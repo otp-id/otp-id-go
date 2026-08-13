@@ -127,3 +127,16 @@ func TestParseVerifiedEventBadJSON(t *testing.T) {
 		t.Fatalf("err = %v, want a decode error", err)
 	}
 }
+
+func TestParseVerifiedEventUnexpectedEvent(t *testing.T) {
+	stubNow(t, time.Unix(1765700000, 0))
+	body := []byte(`{"event":"otp.expired","otp_id":"OTP20260807ABCD000001"}`)
+	mac := hmac.New(sha256.New, []byte(webhookSecret))
+	mac.Write([]byte(webhookTimestamp + "."))
+	mac.Write(body)
+	sig := hex.EncodeToString(mac.Sum(nil))
+	_, err := ParseVerifiedEvent(webhookSecret, webhookTimestamp, sig, body)
+	if !errors.Is(err, ErrUnexpectedEvent) {
+		t.Fatalf("err = %v, want ErrUnexpectedEvent", err)
+	}
+}

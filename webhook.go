@@ -23,6 +23,9 @@ var (
 	// ErrStaleTimestamp is returned when X-OTPID-Timestamp is not a unix
 	// timestamp within WebhookTolerance of the local clock.
 	ErrStaleTimestamp = errors.New("otpid: webhook timestamp outside tolerance")
+	// ErrUnexpectedEvent is returned when a webhook payload carries an
+	// event type other than "otp.verified".
+	ErrUnexpectedEvent = errors.New("otpid: unexpected webhook event")
 )
 
 // timeNow is stubbed in tests.
@@ -75,6 +78,9 @@ func ParseVerifiedEvent(secret, timestamp, signature string, body []byte) (*Veri
 	var ev VerifiedEvent
 	if err := json.Unmarshal(body, &ev); err != nil {
 		return nil, fmt.Errorf("otpid: decode webhook payload: %w", err)
+	}
+	if ev.Event != "otp.verified" {
+		return nil, fmt.Errorf("%w: %q", ErrUnexpectedEvent, ev.Event)
 	}
 	return &ev, nil
 }
