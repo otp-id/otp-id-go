@@ -76,7 +76,7 @@ if err != nil {
 			existing := apiErr.Details["existing_otp_id"] // recover the original transaction
 			_ = existing
 		case otpid.ErrCodeRateLimited:
-			// slow down (20 requests/minute per API key)
+			// slow down (20 requests per second per API key)
 		}
 		return
 	}
