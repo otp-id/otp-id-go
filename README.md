@@ -40,6 +40,7 @@ func main() {
 	res, err := client.RequestOTP(ctx, otpid.OrderParams{
 		Channel:     otpid.ChannelWhatsApp,
 		Destination: "6281234567890",
+		Brand:       "MyApp",      // shown in the OTP message; defaults to your merchant brand_name
 		ExternalID:  "order-8821", // optional idempotency key
 	})
 	if err != nil {

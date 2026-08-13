@@ -4,6 +4,18 @@ All notable changes to this project are documented in this file. The format
 follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the
 project adheres to [Semantic Versioning](https://semver.org/).
 
+## [Unreleased]
+
+### Added
+
+- `examples/` — runnable examples for every channel (`whatsapp`, `sms`,
+  `voice`, `email`, `misscall`, `whatsapp-inbound`, `send`), mirroring the
+  cURL examples in the API docs.
+
+### Changed
+
+- README quickstart now sets `Brand` in `OrderParams`.
+
 ## [0.1.0] - 2026-08-14
 
 ### Added
