@@ -114,7 +114,7 @@ func TestSendOTPBodyIncludesOtp(t *testing.T) {
 		json.Unmarshal(raw, &gotBody)
 		w.Write([]byte(orderWhatsAppFixture))
 	})
-	_, err := c.SendOTP(context.Background(), "482913", OrderParams{
+	res, err := c.SendOTP(context.Background(), "482913", OrderParams{
 		Channel:     ChannelWhatsApp,
 		Destination: "6281234567890",
 	})
@@ -126,6 +126,9 @@ func TestSendOTPBodyIncludesOtp(t *testing.T) {
 	}
 	if gotBody["otp"] != "482913" || gotBody["channel"] != "whatsapp" || gotBody["destination"] != "6281234567890" {
 		t.Errorf("body = %v", gotBody)
+	}
+	if res.OtpID != "OTP20260807ABCD000001" || res.Status != "sent" || res.LastBalance != 99650 {
+		t.Errorf("res = %+v", res)
 	}
 }
 
