@@ -3,19 +3,19 @@ package otpid
 import (
 	"context"
 	"encoding/json"
-	"io"
+	"io/ioutil"
 	"net/http"
 	"strings"
 	"testing"
 )
 
 func TestVerifyOTPSuccess(t *testing.T) {
-	var gotBody map[string]any
+	var gotBody map[string]interface{}
 	c := newTestClient(t, func(w http.ResponseWriter, r *http.Request) {
 		if r.URL.Path != "/v3/verify" {
 			t.Errorf("path = %q", r.URL.Path)
 		}
-		raw, _ := io.ReadAll(r.Body)
+		raw, _ := ioutil.ReadAll(r.Body)
 		json.Unmarshal(raw, &gotBody)
 		w.Write([]byte(`{"success":true,"data":{"otp_id":"OTP20260807ABCD000001","verified":true,"reason":""},"error":null}`))
 	})

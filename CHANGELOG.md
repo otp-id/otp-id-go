@@ -6,6 +6,8 @@ project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [0.1.1] - 2026-08-17
+
 ### Added
 
 - `examples/` — runnable examples for every channel (`whatsapp`, `sms`,
@@ -14,6 +16,9 @@ project adheres to [Semantic Versioning](https://semver.org/).
 
 ### Changed
 
+- Language floor lowered to **Go 1.15** (`any` → `interface{}`, `io.ReadAll`
+  → `ioutil.ReadAll`) so merchants on older toolchains can `go get` the
+  module. CI matrix now includes 1.15, 1.21, and stable.
 - README quickstart now sets `Brand` in `OrderParams`.
 
 ## [0.1.0] - 2026-08-14

@@ -31,7 +31,7 @@ const (
 type APIError struct {
 	Code       string
 	Message    string
-	Details    map[string]any // e.g. {"existing_otp_id": "..."} on DUPLICATE_EXTERNAL_ID
+	Details    map[string]interface{} // e.g. {"existing_otp_id": "..."} on DUPLICATE_EXTERNAL_ID
 	HTTPStatus int
 }
 
