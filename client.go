@@ -7,13 +7,14 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"io/ioutil"
 	"net/http"
 	"strings"
 	"time"
 )
 
 // Version is the SDK version, sent in the User-Agent header.
-const Version = "0.1.0"
+const Version = "0.1.1"
 
 const (
 	defaultBaseURL = "https://api.otp.id"
@@ -67,14 +68,14 @@ type envelope struct {
 }
 
 type errorBody struct {
-	Code    string         `json:"code"`
-	Message string         `json:"message"`
-	Details map[string]any `json:"details"`
+	Code    string                 `json:"code"`
+	Message string                 `json:"message"`
+	Details map[string]interface{} `json:"details"`
 }
 
 // doRequest performs a single HTTP call (no retries), decodes the V3
 // envelope, and unmarshals data into out when out is non-nil.
-func (c *Client) doRequest(ctx context.Context, method, path string, body any, out any) error {
+func (c *Client) doRequest(ctx context.Context, method, path string, body interface{}, out interface{}) error {
 	if c.apiKey == "" {
 		return errEmptyAPIKey
 	}
@@ -100,7 +101,7 @@ func (c *Client) doRequest(ctx context.Context, method, path string, body any, o
 		return fmt.Errorf("otpid: %s %s: %w", method, path, err)
 	}
 	defer resp.Body.Close()
-	raw, err := io.ReadAll(io.LimitReader(resp.Body, maxBodyBytes))
+	raw, err := ioutil.ReadAll(io.LimitReader(resp.Body, maxBodyBytes))
 	if err != nil {
 		return fmt.Errorf("otpid: read response body: %w", err)
 	}

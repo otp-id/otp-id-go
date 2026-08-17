@@ -16,7 +16,7 @@ WhatsApp Inbound) with prepaid billing.
 go get github.com/otp-id/otp-id-go
 ```
 
-Requires Go 1.21+.
+Requires Go 1.15+.
 
 ## Quickstart
 
@@ -148,7 +148,7 @@ outside ±5 minutes (replay protection), and decodes the payload:
 
 ```go
 http.HandleFunc("/webhooks/otpid", func(w http.ResponseWriter, r *http.Request) {
-	body, err := io.ReadAll(http.MaxBytesReader(w, r.Body, 1<<20))
+	body, err := ioutil.ReadAll(http.MaxBytesReader(w, r.Body, 1<<20))
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		return

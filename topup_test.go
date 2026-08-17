@@ -3,18 +3,18 @@ package otpid
 import (
 	"context"
 	"encoding/json"
-	"io"
+	"io/ioutil"
 	"net/http"
 	"testing"
 )
 
 func TestCreateTopup(t *testing.T) {
-	var gotBody map[string]any
+	var gotBody map[string]interface{}
 	c := newTestClient(t, func(w http.ResponseWriter, r *http.Request) {
 		if r.Method != http.MethodPost || r.URL.Path != "/v3/topups" {
 			t.Errorf("%s %s", r.Method, r.URL.Path)
 		}
-		raw, _ := io.ReadAll(r.Body)
+		raw, _ := ioutil.ReadAll(r.Body)
 		json.Unmarshal(raw, &gotBody)
 		w.Write([]byte(`{"success":true,"data":{"topup_id":"TC20990809Q7M4X2A8BC5D6EFG","payment_url":"https://app.otp.id/topup/TC20990809Q7M4X2A8BC5D6EFG?hash=abc","payment_hash":"abc","amount":100000,"payment_total":100750,"payment_method_id":3,"payment_method":"QRIS","payment_type":"qris","payment_expired_at":"2026-08-14 12:00:00","status":"pending"},"error":null}`))
 	})

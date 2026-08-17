@@ -3,7 +3,7 @@ package otpid
 import (
 	"context"
 	"encoding/json"
-	"io"
+	"io/ioutil"
 	"net/http"
 	"testing"
 )
@@ -18,10 +18,10 @@ const orderMisscallFixture = `{"success":true,"data":{"otp_id":"OTP20260807ABCD0
 
 func TestRequestOTPWhatsApp(t *testing.T) {
 	var gotPath string
-	var gotBody map[string]any
+	var gotBody map[string]interface{}
 	c := newTestClient(t, func(w http.ResponseWriter, r *http.Request) {
 		gotPath = r.URL.Path
-		raw, _ := io.ReadAll(r.Body)
+		raw, _ := ioutil.ReadAll(r.Body)
 		json.Unmarshal(raw, &gotBody)
 		w.Write([]byte(orderWhatsAppFixture))
 	})
@@ -59,9 +59,9 @@ func TestRequestOTPWhatsApp(t *testing.T) {
 }
 
 func TestRequestOTPOmitsEmptyOptionalFields(t *testing.T) {
-	var gotBody map[string]any
+	var gotBody map[string]interface{}
 	c := newTestClient(t, func(w http.ResponseWriter, r *http.Request) {
-		raw, _ := io.ReadAll(r.Body)
+		raw, _ := ioutil.ReadAll(r.Body)
 		json.Unmarshal(raw, &gotBody)
 		w.Write([]byte(orderInboundFixture))
 	})
@@ -107,10 +107,10 @@ func TestRequestOTPMisscallVerification(t *testing.T) {
 
 func TestSendOTPBodyIncludesOtp(t *testing.T) {
 	var gotPath string
-	var gotBody map[string]any
+	var gotBody map[string]interface{}
 	c := newTestClient(t, func(w http.ResponseWriter, r *http.Request) {
 		gotPath = r.URL.Path
-		raw, _ := io.ReadAll(r.Body)
+		raw, _ := ioutil.ReadAll(r.Body)
 		json.Unmarshal(raw, &gotBody)
 		w.Write([]byte(orderWhatsAppFixture))
 	})
