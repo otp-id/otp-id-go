@@ -16,6 +16,8 @@ const orderInboundFixture = `{"success":true,"data":{"otp_id":"OTP20260807ABCD00
 
 const orderMisscallFixture = `{"success":true,"data":{"otp_id":"OTP20260807ABCD000003","status":"sent","channel":"misscall","number":"6281234567890","price":250,"last_balance":99050,"expires_at":"2026-08-07 10:05:00","verification":{"prefix":"628559263","otp_length":4}},"error":null}`
 
+const orderFailedFixture = `{"success":true,"data":{"otp_id":"OTP20260807ABCD000004","status":"failed","channel":"whatsapp","number":"6281234567890","price":350,"last_balance":99650,"expires_at":"2026-08-07 10:05:00","failure":{"code":"NUMBER_NOT_ON_WHATSAPP","message":"Nomor tidak terdaftar di WhatsApp"}},"error":null}`
+
 func TestRequestOTPWhatsApp(t *testing.T) {
 	var gotPath string
 	var gotBody map[string]interface{}
@@ -55,6 +57,28 @@ func TestRequestOTPWhatsApp(t *testing.T) {
 	}
 	if res.Verification != nil {
 		t.Error("whatsapp order must have nil Verification")
+	}
+	if res.Failure != nil {
+		t.Error("successful order must have nil Failure")
+	}
+}
+
+func TestRequestOTPFailure(t *testing.T) {
+	c := newTestClient(t, func(w http.ResponseWriter, r *http.Request) {
+		w.Write([]byte(orderFailedFixture))
+	})
+	res, err := c.RequestOTP(context.Background(), OrderParams{Channel: ChannelWhatsApp, Destination: "6281234567890"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if res.Status != "failed" {
+		t.Errorf("Status = %q, want failed", res.Status)
+	}
+	if res.Failure == nil {
+		t.Fatal("failed order must have a non-nil Failure")
+	}
+	if res.Failure.Code != FailureCodeNumberNotOnWhatsApp || res.Failure.Message == "" {
+		t.Errorf("Failure = %+v", res.Failure)
 	}
 }
 
