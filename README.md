@@ -90,6 +90,19 @@ with `verified:false`, and the SDK returns `(*VerifyResult, nil)`. Expired,
 locked, or already-used transactions do return an `*APIError`
 (`OTP_EXPIRED`, `TOO_MANY_ATTEMPTS`, `ALREADY_USED`).
 
+A transaction can also fail *after* being accepted — the delivery itself
+fails at the vendor. That is not an `*APIError` either: `RequestOTP`,
+`SendOTP`, and `OTPStatus` all return `(*OrderResult`/`*StatusResult, nil)`
+with `res.Status == "failed"` and `res.Failure` set:
+
+```go
+if res.Status == "failed" && res.Failure != nil {
+	fmt.Println("delivery failed:", res.Failure.Code, "-", res.Failure.Message)
+	// e.g. otpid.FailureCodeNumberNotOnWhatsApp — treat unknown codes
+	// gracefully, the server may add new ones over time.
+}
+```
+
 ## Channels
 
 | Constant | Value | Notes |

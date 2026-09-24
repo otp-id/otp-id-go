@@ -17,9 +17,16 @@ type StatusResult struct {
 	ExpiresAt  string  `json:"expires_at"`
 	VerifiedAt string  `json:"verified_at"` // "" until verified
 	Price      int     `json:"price"`
-	// Verification is only present for not-yet-verified misscall
-	// transactions (Prefix field), so polling clients can build their UI.
+	// Verification is present for not-yet-verified transactions that carry
+	// interactive delivery state, so polling clients can build their UI:
+	// misscall (Prefix field), and pending, not-expired whatsapp_inbound
+	// (WaNumber/Message/WaLink/ExpiresAt fields). Nil for every other
+	// channel or once the transaction leaves that state.
 	Verification *Verification `json:"verification,omitempty"`
+	// Failure describes why delivery failed. Set only when Status ==
+	// "failed"; nil otherwise. See the FailureCode* constants — treat any
+	// unrecognized Code gracefully.
+	Failure *Failure `json:"failure,omitempty"`
 }
 
 // OTPStatus fetches the current state of a transaction

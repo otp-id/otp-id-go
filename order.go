@@ -53,6 +53,10 @@ type OrderResult struct {
 	// the SDK does not parse server datetimes.
 	ExpiresAt    string        `json:"expires_at"`
 	Verification *Verification `json:"verification,omitempty"`
+	// Failure describes why delivery failed. Set only when Status ==
+	// "failed"; nil otherwise. See the FailureCode* constants — treat any
+	// unrecognized Code gracefully.
+	Failure *Failure `json:"failure,omitempty"`
 }
 
 // RequestOTP creates an OTP transaction with a server-generated code

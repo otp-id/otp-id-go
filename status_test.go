@@ -27,6 +27,9 @@ func TestOTPStatus(t *testing.T) {
 	if res.Verification != nil {
 		t.Error("non-misscall status must have nil Verification")
 	}
+	if res.Failure != nil {
+		t.Error("successful status must have nil Failure")
+	}
 }
 
 func TestOTPStatusMisscallPrefix(t *testing.T) {
@@ -39,6 +42,39 @@ func TestOTPStatusMisscallPrefix(t *testing.T) {
 	}
 	if res.Verification == nil || res.Verification.Prefix != "628559263" {
 		t.Errorf("verification = %+v", res.Verification)
+	}
+}
+
+func TestOTPStatusInboundVerification(t *testing.T) {
+	c := newTestClient(t, func(w http.ResponseWriter, r *http.Request) {
+		w.Write([]byte(`{"success":true,"data":{"otp_id":"OTP20260807ABCD000002","status":"pending","channel":"whatsapp_inbound","number":"","attempts":0,"expires_at":"2026-08-07 10:05:00","verified_at":"","price":350,"verification":{"wa_number":"6285212345678","message":"OTPID V-8FK2QN9P — verifikasi MyApp. Kirim pesan ini tanpa mengubah isinya.","wa_link":"https://wa.me/6285212345678?text=OTPID%20V-8FK2QN9P","expires_at":"2026-08-07 10:05:00"}},"error":null}`))
+	})
+	res, err := c.OTPStatus(context.Background(), "OTP20260807ABCD000002")
+	if err != nil {
+		t.Fatal(err)
+	}
+	v := res.Verification
+	if v == nil {
+		t.Fatal("pending whatsapp_inbound status must have a Verification block")
+	}
+	if v.WaNumber != "6285212345678" || v.WaLink == "" || v.Message == "" || v.ExpiresAt != "2026-08-07 10:05:00" {
+		t.Errorf("verification = %+v", v)
+	}
+	if res.Failure != nil {
+		t.Error("pending status must have nil Failure")
+	}
+}
+
+func TestOTPStatusFailure(t *testing.T) {
+	c := newTestClient(t, func(w http.ResponseWriter, r *http.Request) {
+		w.Write([]byte(`{"success":true,"data":{"otp_id":"OTP20260807ABCD000004","status":"failed","channel":"whatsapp","number":"6281234567890","attempts":0,"expires_at":"2026-08-07 10:05:00","verified_at":"","price":350,"failure":{"code":"PROVIDER_UNAVAILABLE","message":"Penyedia layanan sedang tidak tersedia"}},"error":null}`))
+	})
+	res, err := c.OTPStatus(context.Background(), "OTP20260807ABCD000004")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if res.Failure == nil || res.Failure.Code != FailureCodeProviderUnavailable || res.Failure.Message == "" {
+		t.Errorf("Failure = %+v", res.Failure)
 	}
 }
 

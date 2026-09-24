@@ -6,6 +6,19 @@ project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Added
+
+- `Failure` struct (`Code`, `Message`) and `FailureCode*` constants
+  (`NUMBER_NOT_ON_WHATSAPP`, `TOO_FREQUENT`, `CHANNEL_UNAVAILABLE`,
+  `PROVIDER_UNAVAILABLE`, `DELIVERY_FAILED`), exposed as `Failure` on both
+  `OrderResult` and `StatusResult`. Set only when `Status == "failed"`.
+
+### Changed
+
+- `StatusResult.Verification` (`GET /v3/otp/{otp_id}`) is now also
+  populated for pending, not-expired `whatsapp_inbound` transactions
+  (previously misscall only).
+
 ## [0.1.1] - 2026-08-17
 
 ### Added
