@@ -18,6 +18,8 @@ go get github.com/otp-id/otp-id-go
 
 Requires Go 1.15+.
 
+Upgrading from v0.1.x? See [UPGRADING.md](UPGRADING.md) (v0.2.0 is additive, no breaking changes).
+
 ## Quickstart
 
 ```go
