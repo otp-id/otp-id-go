@@ -41,8 +41,8 @@ type Verification struct {
 // OrderResult is the success payload of POST /v3/request and POST /v3/send.
 type OrderResult struct {
 	OtpID string `json:"otp_id"`
-	// Status is one of: sent | success | failed | pending | waiting.
-	// whatsapp_inbound always starts as "waiting" (not charged until
+	// Status is one of: sent | success | failed | pending.
+	// whatsapp_inbound always starts as "pending" (not charged until
 	// verified); "pending" may appear for some vendor deliveries. An
 	// idempotency replay reflects the current state, so it may also be
 	// "verified" or (whatsapp_inbound only) "expired".
