@@ -129,12 +129,12 @@ No code to type: show the user `res.Verification.WaLink` and let OTP.ID match
 their incoming message. Never call `VerifyOTP` for these transactions —
 detect completion via the `otp.verified` webhook or by polling `OTPStatus`.
 
-The transaction starts as `waiting` and ends as `verified` or `expired`
+The transaction starts as `pending` and ends as `verified` or `expired`
 (`expires_at` passed without a match). **You only pay for verified
 transactions:** `res.Price` is what will be charged if the user verifies,
 `res.LastBalance` is unchanged at request time, and `expired` transactions
 are never charged. With a bound `Destination`, a message from another number
-is rejected and the transaction stays `waiting`.
+is rejected and the transaction stays `pending`.
 
 ```go
 res, _ := client.RequestOTP(ctx, otpid.OrderParams{Channel: otpid.ChannelWhatsAppInbound})

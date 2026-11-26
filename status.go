@@ -10,9 +10,9 @@ import (
 // StatusResult is the success payload of GET /v3/otp/{otp_id}.
 type StatusResult struct {
 	OtpID string `json:"otp_id"`
-	// Status is one of: sent | success | failed | pending | waiting |
-	// verified | expired. "waiting" (initial) and "expired" (expires_at
-	// passed without verification, terminal, not charged) apply to
+	// Status is one of: sent | success | failed | pending |
+	// verified | expired. "expired" (expires_at
+	// passed without verification, terminal, not charged) applies to
 	// whatsapp_inbound only; whatsapp_inbound is charged only once
 	// "verified".
 	Status     string  `json:"status"`
@@ -24,7 +24,7 @@ type StatusResult struct {
 	Price      int     `json:"price"`
 	// Verification is present for not-yet-verified transactions that carry
 	// interactive delivery state, so polling clients can build their UI:
-	// misscall (Prefix field), and waiting, not-expired whatsapp_inbound
+	// misscall (Prefix field), and pending, not-expired whatsapp_inbound
 	// (WaNumber/Message/WaLink/ExpiresAt fields). Nil for every other
 	// channel or once the transaction leaves that state.
 	Verification *Verification `json:"verification,omitempty"`
