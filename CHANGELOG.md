@@ -16,8 +16,13 @@ project adheres to [Semantic Versioning](https://semver.org/).
 ### Changed
 
 - `StatusResult.Verification` (`GET /v3/otp/{otp_id}`) is now also
-  populated for pending, not-expired `whatsapp_inbound` transactions
+  populated for waiting, not-expired `whatsapp_inbound` transactions
   (previously misscall only).
+- Documented status values: `whatsapp_inbound` now starts as `waiting`
+  (was `pending`) and can end as `expired` (not charged); it is charged only
+  when `verified`, so `OrderResult.Price` is the amount due on verification
+  and `LastBalance` is unchanged at request time. Doc-only; `Status` stays a
+  plain `string`.
 
 ## [0.1.1] - 2026-08-17
 

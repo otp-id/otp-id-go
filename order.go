@@ -40,14 +40,22 @@ type Verification struct {
 
 // OrderResult is the success payload of POST /v3/request and POST /v3/send.
 type OrderResult struct {
-	OtpID   string  `json:"otp_id"`
-	Status  string  `json:"status"` // pending | sent | success | failed
+	OtpID string `json:"otp_id"`
+	// Status is one of: sent | success | failed | pending | waiting.
+	// whatsapp_inbound always starts as "waiting" (not charged until
+	// verified); "pending" may appear for some vendor deliveries. An
+	// idempotency replay reflects the current state, so it may also be
+	// "verified" or (whatsapp_inbound only) "expired".
+	Status  string  `json:"status"`
 	Channel Channel `json:"channel"`
 	Number  string  `json:"number"`
-	Price   int     `json:"price"`
+	// Price is the credit cost of this transaction. For whatsapp_inbound it
+	// is the amount that will be charged only if the transaction is
+	// verified; nothing is deducted at request time.
+	Price int `json:"price"`
 	// LastBalance is the remaining credit after this transaction. It stays
-	// unchanged when delivery failed (status "failed") or on an idempotency
-	// replay.
+	// unchanged when delivery failed (status "failed"), on an idempotency
+	// replay, and for whatsapp_inbound (charged only when verified).
 	LastBalance int `json:"last_balance"`
 	// ExpiresAt is "YYYY-MM-DD HH:MM:SS" in WIB (UTC+7). Kept as a string;
 	// the SDK does not parse server datetimes.
